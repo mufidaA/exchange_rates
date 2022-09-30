@@ -1,25 +1,50 @@
-import logo from './logo.svg';
 import './App.css';
+import React, {useState} from 'react';
+
+const URL = 'https://api.exchangerate.host/latest'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+ const [eur,setEur] = useState(0);
+ const [gbp,setGbp] = useState(0);
+ const [rate,setRate] = useState(0);
+ 
+ return (
+  <div id="container">
+      <form onSubmit={convert}>
+        <div>
+          <label>Eur</label>&nbsp;
+          <input type="number" step="0.01" value={eur} onChange={e => setEur(e.target.value)} />  
+          <output> {rate} is the current rate of GBP unit</output>
+        </div>
+        <div>
+          <label>Gbp</label>
+          <output> {gbp.toFixed(2)} €</output>
+        </div>
+        <div>
+          <button>Convert</button>
+        </div>
+      </form>
+  </div>
+ );
+
+ async function convert(e) {
+  e.preventDefault();
+  try{
+    const address = URL;
+    const response = await fetch(address);
+
+    if (response.ok) {
+      const json = await response.json();
+      setRate(json.rates.GBP);
+      setGbp(eur * rate);
+    } else {
+      alert('Error retriving exchange rate.')
+    }
+  } catch (err) {
+    alert('Error');
+  }
 }
+}
+
 
 export default App;
